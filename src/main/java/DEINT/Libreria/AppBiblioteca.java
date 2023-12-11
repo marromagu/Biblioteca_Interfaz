@@ -17,7 +17,7 @@ import javax.swing.JPanel;
  */
 public class AppBiblioteca extends javax.swing.JFrame {
 
-    Biblioteca miBiblioteca = new Biblioteca();
+    Biblioteca miBiblioteca = Biblioteca.getBiblioteca();
 
     public Biblioteca getMiBiblioteca() {
         return miBiblioteca;

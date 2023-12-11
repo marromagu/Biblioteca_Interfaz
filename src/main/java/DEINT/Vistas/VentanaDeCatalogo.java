@@ -33,8 +33,7 @@ public class VentanaDeCatalogo extends javax.swing.JPanel {
             Libro libro = entry.getValue();
 
             catalogoView.append(
-                    "Portada" + libro.getPortada() + "\n"
-                    + "ID: " + idLibro + "\n"
+                    "ID: " + idLibro + "\n"
                     + "Título: " + libro.getTitulo() + "\n"
                     + "Autor: " + libro.getAutor() + "\n"
                     + "Materia: " + libro.getMateria() + "\n"

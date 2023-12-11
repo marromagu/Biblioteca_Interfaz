@@ -16,8 +16,16 @@ public class Biblioteca {
 
     private HashMap<Integer, Libro> catalogoHashMap = new HashMap<>();
     private HashMap<Integer, Usuario> usuariosHashMap = new HashMap<>();
+    private static Biblioteca miBiblioteca = null;
 
-    public Biblioteca() {
+    public static Biblioteca getBiblioteca() {
+        if (miBiblioteca == null) {
+            miBiblioteca = new Biblioteca();
+        }
+        return miBiblioteca;
+    }
+
+    private Biblioteca() {
         agregarLibro();
         agregarUsuarios();
     }
