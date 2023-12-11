@@ -4,8 +4,9 @@
  */
 package DEINT.Vistas;
 
-import DEINT.Funcionamiento.CatalogoDeLibros;
-import DEINT.Funcionamiento.Libro;
+import DEINT.Funcionamiento.*;
+import DEINT.Libreria.AppBiblioteca;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -14,29 +15,26 @@ import java.util.Map;
  */
 public class VentanaDeCatalogo extends javax.swing.JPanel {
 
-    /**
-     * Creates new form Inicio
-     */
-    private final Map<Integer, Libro> catalogoHashMap;
-    CatalogoDeLibros miCatalogo = new CatalogoDeLibros();
+    AppBiblioteca miApp = new AppBiblioteca();
 
     /**
      * Creates new form Inicio
      */
     public VentanaDeCatalogo() {
-        this.catalogoHashMap = miCatalogo.getCatalogoHashMap();
         initComponents();
         mostrarLibrosEnTextArea();
     }
 
     private void mostrarLibrosEnTextArea() {
         catalogoView.setText(""); // Limpiar el contenido actual
-
+        HashMap<Integer, Libro> catalogoHashMap = miApp.getMiBiblioteca().getCatalogoHashMap();
         for (Map.Entry<Integer, Libro> entry : catalogoHashMap.entrySet()) {
             int idLibro = entry.getKey();
             Libro libro = entry.getValue();
 
-            catalogoView.append("ID: " + idLibro + "\n"
+            catalogoView.append(
+                    "Portada" + libro.getPortada() + "\n"
+                    + "ID: " + idLibro + "\n"
                     + "Título: " + libro.getTitulo() + "\n"
                     + "Autor: " + libro.getAutor() + "\n"
                     + "Materia: " + libro.getMateria() + "\n"

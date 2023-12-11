@@ -4,7 +4,8 @@
  */
 package DEINT.Vistas;
 
-import DEINT.Funcionamiento.CatalogoDeLibros;
+import DEINT.Libreria.AppBiblioteca;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -15,8 +16,8 @@ public class VentanaDeDevolucion extends javax.swing.JPanel {
     /**
      * Creates new form Inicio
      */
-    CatalogoDeLibros miCatalogo = new CatalogoDeLibros();
-    int nLibro;
+     AppBiblioteca miApp = new AppBiblioteca();
+
     public VentanaDeDevolucion() {
         initComponents();
 
@@ -112,14 +113,19 @@ public class VentanaDeDevolucion extends javax.swing.JPanel {
 
     private void DevolucionJTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DevolucionJTextFieldActionPerformed
         // TODO add your handling code here:
-       
+
     }//GEN-LAST:event_DevolucionJTextFieldActionPerformed
 
     private void ConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConfirmarActionPerformed
         // TODO add your handling code here:
-         nLibro = Integer.parseInt(DevolucionJTextField.getText());
-         miCatalogo.devolverLibro(nLibro);
-         DevolucionJTextField.setText("");
+        int nLibro = Integer.parseInt(DevolucionJTextField.getText());
+        if (miApp.getMiBiblioteca().devolucionLibro(nLibro)) {
+            JOptionPane.showMessageDialog(jPanel1, "Devolucion Finalizada.");
+        } else {
+            JOptionPane.showMessageDialog(jPanel1, "El libro no esta prestado.");
+        }
+
+        DevolucionJTextField.setText("");
     }//GEN-LAST:event_ConfirmarActionPerformed
 
 

@@ -4,8 +4,8 @@
  */
 package DEINT.Vistas;
 
-import DEINT.Funcionamiento.ListaDeUsuarios;
-import DEINT.Funcionamiento.CatalogoDeLibros;
+import DEINT.Libreria.*;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,18 +16,11 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
     /**
      * Creates new form Inicio
      */
-    ListaDeUsuarios miBiblioteca = new ListaDeUsuarios();
-    CatalogoDeLibros miCatalogo = new CatalogoDeLibros();
-    int nLector;
-    int nLibro;
+    AppBiblioteca miApp = new AppBiblioteca();
 
     public VentanaDePrestamos() {
         initComponents();
-        
-    }
-    
-    public String stringHTML(String txt) {
-        return "<html><p>" + txt + "</p></hml>";
+
     }
 
     /**
@@ -142,21 +135,25 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
 
     private void AceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AceptarActionPerformed
         // TODO add your handling code here:
-        nLector = Integer.parseInt(NumeroLectorField.getText());
-        nLibro = Integer.parseInt(ListaPrestarField.getText());
-        miBiblioteca.añadirPrestamo(nLector, miCatalogo.getLibro(nLibro));
+        int nLector = Integer.parseInt(NumeroLectorField.getText());
+        int nLibro = Integer.parseInt(ListaPrestarField.getText());
+        if (miApp.getMiBiblioteca().añadirPrestamo(nLector, nLibro)) {
+            JOptionPane.showMessageDialog(jPanel1, "Prestamo Aceptado");
+        }else{
+            JOptionPane.showMessageDialog(jPanel1, "Prestamo Denegado");
+        }
         NumeroLectorField.setText("");
         ListaPrestarField.setText("");
     }//GEN-LAST:event_AceptarActionPerformed
 
     private void NumeroLectorFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NumeroLectorFieldActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_NumeroLectorFieldActionPerformed
 
     private void ListaPrestarFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ListaPrestarFieldActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_ListaPrestarFieldActionPerformed
 
 

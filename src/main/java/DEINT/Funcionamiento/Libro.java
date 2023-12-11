@@ -4,6 +4,8 @@
  */
 package DEINT.Funcionamiento;
 
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author mario
@@ -13,14 +15,18 @@ public class Libro {
     private String autor;
     private String materia;
     private boolean estado;//Disponible true en presatmo false
-    //Portada (imagen)
+    private ImageIcon Portada;
 
-    public Libro(String titulo, String autor, String materia, boolean estado) {
+    public Libro(String titulo, String autor, String materia, boolean estado, ImageIcon Portada) {
         this.titulo = titulo;
         this.autor = autor;
         this.materia = materia;
         this.estado = estado;
+        this.Portada = Portada;
     }
+
+  
+    
 
     public String getTitulo() {
         return titulo;
@@ -64,6 +70,14 @@ public class Libro {
         sb.append(", estado=").append(estado);
         sb.append('}');
         return sb.toString();
+    }
+
+    public ImageIcon getPortada() {
+        return Portada;
+    }
+
+    public void setPortada(ImageIcon Portada) {
+        this.Portada = Portada;
     }
     
 }

@@ -4,20 +4,12 @@
  */
 package DEINT.Libreria;
 
-import DEINT.Funcionamiento.ListaDeUsuarios;
-import DEINT.Funcionamiento.CatalogoDeLibros;
-import DEINT.Vistas.VentanaDeCatalogo;
-import DEINT.Vistas.VentanaDeConfiguracion;
-import DEINT.Vistas.VentanaDeDevolucion;
-import DEINT.Vistas.VentanaDeInicio;
-import DEINT.Vistas.VentanaDePrestamos;
-import DEINT.Vistas.VentanaDeUsuario;
-import com.formdev.flatlaf.FlatLightLaf;
+import DEINT.Funcionamiento.*;
+import DEINT.Vistas.*;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkIJTheme;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 
 /**
  *
@@ -25,8 +17,11 @@ import javax.swing.UIManager;
  */
 public class AppBiblioteca extends javax.swing.JFrame {
 
-    ListaDeUsuarios miBiblioteca = new ListaDeUsuarios();
-    CatalogoDeLibros miCatalogo = new CatalogoDeLibros();
+    Biblioteca miBiblioteca = new Biblioteca();
+
+    public Biblioteca getMiBiblioteca() {
+        return miBiblioteca;
+    }
 
     /**
      * Creates new form NewJFrame
