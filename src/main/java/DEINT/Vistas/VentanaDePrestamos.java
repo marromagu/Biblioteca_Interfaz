@@ -6,15 +6,31 @@ package DEINT.Vistas;
 
 import DEINT.Funcionamiento.*;
 import DEINT.Libreria.*;
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Image;
 import java.io.*;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import com.itextpdf.text.Document;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 import org.springframework.util.ResourceUtils;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.time.format.DateTimeParseException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -184,6 +200,7 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
     }//GEN-LAST:event_ListaPrestarFieldActionPerformed
 
     private void GenerarPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerarPDFActionPerformed
+        Document document = new Document();
         try {
             String nombrePDF = "UD_5-Lector-" + NumeroLectorField.getText() + "-Libro-" + ListaPrestarField.getText() + ".pdf";
             // Obtención del informe Jasper
@@ -203,9 +220,14 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
 
             // Visualización del informe
             JasperViewer.viewReport(jasperPrint, false);
-
+            PdfWriter.getInstance(document, new FileOutputStream(nombrePDF));
+            document.open();
             JOptionPane.showMessageDialog(jPanel1, "Generado informe.");
         } catch (JRException ex) {
+            Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DocumentException ex) {
             Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_GenerarPDFActionPerformed
@@ -250,6 +272,41 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
         //miLibroPrestado.add(new LibroPrestado("Mario", "a1", "SAD", "dsa", "sad"));
 
         return new JRBeanCollectionDataSource(miLibroPrestado);
+    }
+
+    private void agregarQR(Document document) {
+        // Crear el texto para el código QR
+        try {
+            String textoQR = "Interfaces-Fecha de devolucion " + "26/11/2025";
+
+            // Generar el código QR
+            BufferedImage qrCodeImage = generarCodigoQR(textoQR);
+
+            // Convertir la imagen a formato iText Image
+            Image imagenQR = Image.getInstance(qrCodeImage, null);
+            imagenQR.scaleToFit(150, 150);
+
+            document.add((Element) imagenQR);
+        } catch (DateTimeParseException e) {
+            throw e;
+        } catch (BadElementException ex) {
+            Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DocumentException ex) {
+            Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private BufferedImage generarCodigoQR(String texto) {
+        try {
+            MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+            BitMatrix bitMatrix = multiFormatWriter.encode(texto, BarcodeFormat.QR_CODE, 300, 300);
+            return MatrixToImageWriter.toBufferedImage(bitMatrix);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
