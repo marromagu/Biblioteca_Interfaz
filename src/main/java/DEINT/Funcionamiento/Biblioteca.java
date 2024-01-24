@@ -74,7 +74,7 @@ public class Biblioteca {
         String titulo = "Libro " + id;
         String autor = "Autor " + id;
         String materia = "Materia " + id;
-        ImageIcon img = new ImageIcon("libro_1.png");
+        ImageIcon img = new ImageIcon("\\src\\main\\resources\\libro_1.png");
         boolean estado = true;
 
         return new Libro(titulo, autor, materia, estado, img);

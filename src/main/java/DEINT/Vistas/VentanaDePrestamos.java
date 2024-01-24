@@ -4,24 +4,14 @@
  */
 package DEINT.Vistas;
 
-import DEINT.Funcionamiento.Libro;
+import DEINT.Funcionamiento.*;
 import DEINT.Libreria.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 import org.springframework.util.ResourceUtils;
@@ -81,6 +71,7 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
         LibroPrestar.setText("- Libro a prestar :");
 
         Aceptar.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        Aceptar.setForeground(new java.awt.Color(255, 255, 255));
         Aceptar.setText("Aceptar");
         Aceptar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -101,6 +92,7 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
         });
 
         GenerarPDF.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        GenerarPDF.setForeground(new java.awt.Color(255, 255, 255));
         GenerarPDF.setText("Generar PDF");
         GenerarPDF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -122,18 +114,16 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(Aceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(LibroPrestar)
+                                    .addComponent(NumeroLector))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(NumeroLector)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(NumeroLectorField))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(LibroPrestar)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(ListaPrestarField, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(NumeroLectorField)
+                                    .addComponent(ListaPrestarField, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE))
                                 .addGap(18, 18, 18)
                                 .addComponent(GenerarPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(82, Short.MAX_VALUE))
+                .addContainerGap(75, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -197,7 +187,7 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
         try {
             String nombrePDF = "UD_5-Lector-" + NumeroLectorField.getText() + "-Libro-" + ListaPrestarField.getText() + ".pdf";
             // Obtención del informe Jasper
-            JasperReport jasperReport = getJasperReport();
+            JasperReport miJasperReport = getJasperReport();
 
             // Obtención de parámetros
             Map<String, Object> parameters = getParameters();
@@ -206,7 +196,7 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
             JRDataSource dataSource = getDataSource();
 
             // Llenado del informe
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(miJasperReport, parameters, dataSource);
 
             // Exportación del informe a PDF
             JasperExportManager.exportReportToPdfFile(jasperPrint, nombrePDF);
@@ -235,7 +225,7 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
 
     private JasperReport getJasperReport() {
         try {
-            File template = ResourceUtils.getFile("classpath:report.jrxml");
+            File template = ResourceUtils.getFile("classpath:PlantillaBiblioteca.jrxml");
             return JasperCompileManager.compileReport(template.getAbsolutePath());
         } catch (FileNotFoundException | JRException ex) {
             Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
@@ -246,15 +236,20 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
 
     private Map<String, Object> getParameters() {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("createdBy", "IESVelazquez");
+        parameters.put("createdBy", "Mario Romero");
         return parameters;
     }
 
     private JRDataSource getDataSource() {
-        List<Libro> countries = new LinkedList<>();
+        int nLector = Integer.parseInt(NumeroLectorField.getText());
         int nLibro = Integer.parseInt(ListaPrestarField.getText());
-        countries.add(miApp.getMiBiblioteca().generarLibro(nLibro));
-        return new JRBeanCollectionDataSource(countries);
+        Libro miLibro = miApp.getMiBiblioteca().getCatalogoHashMap().get(nLibro);
+        Usuario miUsuario = miApp.getMiBiblioteca().getUsuariosHashMap().get(nLector);
+        List<LibroPrestado> miLibroPrestado = new LinkedList<>();
+        miLibroPrestado.add(new LibroPrestado(miUsuario.getNombre(), ListaPrestarField.getText(), miLibro.getTitulo(), miLibro.getAutor(), miLibro.getMateria()));
+        //miLibroPrestado.add(new LibroPrestado("Mario", "a1", "SAD", "dsa", "sad"));
+
+        return new JRBeanCollectionDataSource(miLibroPrestado);
     }
 
 }
