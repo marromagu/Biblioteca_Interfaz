@@ -6,31 +6,27 @@ package DEINT.Vistas;
 
 import DEINT.Funcionamiento.*;
 import DEINT.Libreria.*;
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Image;
 import java.io.*;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import com.itextpdf.text.Document;
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.view.JasperViewer;
-import org.springframework.util.ResourceUtils;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+import org.springframework.util.ResourceUtils;
+import com.google.zxing.*;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.awt.Desktop;
+
 
 /**
  *
@@ -200,36 +196,47 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
     }//GEN-LAST:event_ListaPrestarFieldActionPerformed
 
     private void GenerarPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerarPDFActionPerformed
+         try {
+        String nombrePDF = "UD_5-Lector-" + NumeroLectorField.getText() + "-Libro-" + ListaPrestarField.getText() + ".pdf";
+
+        // Obtención del informe Jasper
+        JasperReport miJasperReport = getJasperReport();
+
+        // Obtención de parámetros
+        Map<String, Object> parameters = getParameters();
+
+        // Obtención del origen de datos
+        JRDataSource dataSource = getDataSource();
+
+        // Llenado del informe
+        JasperPrint jasperPrint = JasperFillManager.fillReport(miJasperReport, parameters, dataSource);
+
+        // Exportación del informe a PDF
+        JasperExportManager.exportReportToPdfFile(jasperPrint, nombrePDF);
+
+        // Visualización del informe
+        JasperViewer.viewReport(jasperPrint, false);
+
+        // Crear el documento iText
         Document document = new Document();
-        try {
-            String nombrePDF = "UD_5-Lector-" + NumeroLectorField.getText() + "-Libro-" + ListaPrestarField.getText() + ".pdf";
-            // Obtención del informe Jasper
-            JasperReport miJasperReport = getJasperReport();
+        document.open();
 
-            // Obtención de parámetros
-            Map<String, Object> parameters = getParameters();
+        // Agregar el código QR al documento iText
+        agregarQR(document);
 
-            // Obtención del origen de datos
-            JRDataSource dataSource = getDataSource();
+        // Cerrar el documento iText
+        document.close();
 
-            // Llenado del informe
-            JasperPrint jasperPrint = JasperFillManager.fillReport(miJasperReport, parameters, dataSource);
+        // Abrir el PDF generado con la aplicación predeterminada
+        File pdfFile = new File(nombrePDF);
+        Desktop.getDesktop().open(pdfFile);
 
-            // Exportación del informe a PDF
-            JasperExportManager.exportReportToPdfFile(jasperPrint, nombrePDF);
+        JOptionPane.showMessageDialog(jPanel1, "Generado informe con código QR.");
 
-            // Visualización del informe
-            JasperViewer.viewReport(jasperPrint, false);
-            PdfWriter.getInstance(document, new FileOutputStream(nombrePDF));
-            document.open();
-            JOptionPane.showMessageDialog(jPanel1, "Generado informe.");
-        } catch (JRException ex) {
-            Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (DocumentException ex) {
-            Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    } catch (JRException | IOException ex) {
+        Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(jPanel1, "Error al generar el informe.");
+    }
     }//GEN-LAST:event_GenerarPDFActionPerformed
 
 
@@ -269,12 +276,10 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
         Usuario miUsuario = miApp.getMiBiblioteca().getUsuariosHashMap().get(nLector);
         List<LibroPrestado> miLibroPrestado = new LinkedList<>();
         miLibroPrestado.add(new LibroPrestado(miUsuario.getNombre(), ListaPrestarField.getText(), miLibro.getTitulo(), miLibro.getAutor(), miLibro.getMateria()));
-        //miLibroPrestado.add(new LibroPrestado("Mario", "a1", "SAD", "dsa", "sad"));
-
         return new JRBeanCollectionDataSource(miLibroPrestado);
     }
 
-    private void agregarQR(Document document) {
+    private Image agregarQR(Document document) {
         // Crear el texto para el código QR
         try {
             String textoQR = "Interfaces-Fecha de devolucion " + "26/11/2025";
@@ -284,9 +289,9 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
 
             // Convertir la imagen a formato iText Image
             Image imagenQR = Image.getInstance(qrCodeImage, null);
-            imagenQR.scaleToFit(150, 150);
+            imagenQR.scaleToFit(50, 50);
 
-            document.add((Element) imagenQR);
+            return imagenQR;
         } catch (DateTimeParseException e) {
             throw e;
         } catch (BadElementException ex) {
@@ -296,12 +301,13 @@ public class VentanaDePrestamos extends javax.swing.JPanel {
         } catch (DocumentException ex) {
             Logger.getLogger(VentanaDePrestamos.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
 
     private BufferedImage generarCodigoQR(String texto) {
         try {
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-            BitMatrix bitMatrix = multiFormatWriter.encode(texto, BarcodeFormat.QR_CODE, 300, 300);
+            com.google.zxing.common.BitMatrix bitMatrix = multiFormatWriter.encode(texto, BarcodeFormat.QR_CODE, 300, 300);
             return MatrixToImageWriter.toBufferedImage(bitMatrix);
         } catch (Exception e) {
             e.printStackTrace();

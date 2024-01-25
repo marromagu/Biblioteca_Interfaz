@@ -4,6 +4,8 @@
  */
 package DEINT.Funcionamiento;
 
+import com.itextpdf.text.Image;
+
 /**
  *
  * @author mario
@@ -15,6 +17,7 @@ public class LibroPrestado {
     private String tituloLibro;
     private String autor;
     private String materia;
+   // private Image imagenQR;
 
     public LibroPrestado(String Usuario, String libroPrestado, String tituloLibro, String autor, String materia) {
         this.usuario = Usuario;
@@ -22,7 +25,12 @@ public class LibroPrestado {
         this.tituloLibro = tituloLibro;
         this.autor = autor;
         this.materia = materia;
+        //this.imagenQR = imagenQR;
     }
+
+//    public Image getImagenQR() {
+//        return imagenQR;
+//    }
 
     public String getUsuario() {
         return usuario;
